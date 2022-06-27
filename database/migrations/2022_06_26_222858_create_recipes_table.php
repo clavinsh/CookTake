@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('title', 100);
             $table->text('description')->nullable();
             $table->foreignId('user_id')->constrained();
-            $table->string('image_path'); //thumbnail of the recipe
+            $table->string('image_path')->nullable(); //thumbnail of the recipe
         });
     }
 
