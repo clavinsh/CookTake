@@ -10,6 +10,8 @@ use App\Models\Tag;
 class Recipe extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['title', 'description', 'user_id', 'image_path'];
     //FK relationship
     public function user()
     {

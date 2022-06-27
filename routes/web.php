@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RecipeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,4 +22,11 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-require __DIR__.'/auth.php';
+Route::resource('recipe', RecipeController::class, ['except' => ['show', 'create']]);
+
+Route::get('recipe/{id}', [RecipeController::class, 'show']); //recipes can be seen by unauthenticated users
+Route::get('recipecreate', [RecipeController::class, 'create'])->middleware(['auth']);
+Route::post('recipecreate', [RecipeController::class, 'store'])->middleware(['auth']);
+Route::get('recipeedit', [RecipeController::class, 'edit'])->middleware(['auth']);
+
+require __DIR__ . '/auth.php';
