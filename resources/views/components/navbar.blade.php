@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
     <div class="container-fluid">
         <a href="{{ route('home') }}" class="navbar-brand">
             <x-application-logo class="block h-10 w-auto fill-current text-gray-600" />
@@ -18,18 +18,23 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#">About</a>
                 </li>
-                {{-- Guest --}}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">Account</a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/login">Login</a></li>
-                        <li><a class="dropdown-item" href="/register">Register</a></li>
-                    </ul>
-                </li>
-                {{-- Regular user --}}
+                @if (Route::has('login'))
+                    @auth
+                        {{-- Regular user --}}
 
-                {{-- Admin --}}
+                        {{-- Admin --}}
+                    @else
+                        {{-- Guest --}}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">Account</a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{{ route('login') }}">Login</a></li>
+                                <li><a class="dropdown-item" href="{{ route('register') }}">Register</a></li>
+                            </ul>
+                        </li>
+                    @endauth
+                @endif
             </ul>
         </div>
     </div>
