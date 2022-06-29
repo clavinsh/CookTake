@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Recipe;
+use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -25,7 +26,8 @@ class RecipeController extends Controller
      */
     public function create()
     {
-        return view('recipe.new');
+        $tags = Tag::all();
+        return view('recipe.new', ['tags' => $tags]);
     }
 
     /**
@@ -42,14 +44,22 @@ class RecipeController extends Controller
         $recipe->image_path = $request->image_path;
         $recipe->user_id = Auth::user()->id;
 
-        $imageFile = $request->file('thumbnail');
-        $filePath = Storage::disk('public')->put('images', $imageFile);
-        $recipe->image_path = $filePath;
+        if ($request->hasFile('thumbnail')) {
+            $imageFile = $request->file('thumbnail');
+            $filePath = Storage::disk('public')->put('images', $imageFile);
+            $recipe->image_path = $filePath;
+        }
+
+        // foreach ($request->tags as $tag) {
+        //     $recipe->tags()-
+        // }
+
 
         //dd(asset('storage/' . $filePath));
 
 
         $recipe->save();
+        $recipe->tags()->attach($request->tags);
         return redirect('recipe/' . $recipe->id);
     }
 
@@ -74,7 +84,7 @@ class RecipeController extends Controller
     public function edit($id)
     {
         $recipe = Recipe::find($id);
-        return view('recipe_edit', compact('recipe'));
+        return view('recipe.edit', compact('recipe'));
     }
 
     /**
@@ -86,7 +96,18 @@ class RecipeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $recipe = Recipe::find($id);
+        $recipe->title = $request->title;
+        $recipe->description =  $request->description;
+        if ($request->hasFile('thumbnail')) {
+            //delete old
+            //dd($request->file('thumbnail'));
+            Storage::disk('public')->delete($recipe->image_path);
+            //put new
+            $recipe->image_path = Storage::disk('public')->put('images', $request->file('thumbnail'));
+        }
+        $recipe->save();
+        return redirect('recipe/' . $id);
     }
 
     /**
@@ -95,8 +116,18 @@ class RecipeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
     public function destroy($id)
     {
-        //
+        Recipe::findOrFail($id)->delete();
+        //return home view (?)
+    }
+
+    //main view of the app
+    public function home()
+    {
+        $suggestedRecipes = Recipe::orderByDesc('created_at')->orderByDesc('updated_at')->take(10)->get();
+        //dd($suggestedRecipes);
+        return view('home', ['suggestedRecipes' => $suggestedRecipes]);
     }
 }
