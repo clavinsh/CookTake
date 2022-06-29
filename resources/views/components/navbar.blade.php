@@ -19,21 +19,34 @@
                     <a class="nav-link" href="#">About</a>
                 </li>
                 @if (Route::has('login'))
-                    @auth
-                        {{-- Regular user --}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">Account</a>
+                        @auth
+                            {{-- Regular user --}}
+                            {{-- Admin --}}
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="">Profile</a></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
 
-                        {{-- Admin --}}
-                    @else
-                        {{-- Guest --}}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">Account</a>
+                                        <a class="dropdown-item" href="route('logout')"
+                                            onclick="event.preventDefault();
+                                                        this.closest('form').submit();">
+                                            {{ __('Log Out') }}
+                                        </a>
+                                    </form>
+                                </li>
+                            </ul>
+                        @else
+                            {{-- Guest --}}
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="{{ route('login') }}">Login</a></li>
                                 <li><a class="dropdown-item" href="{{ route('register') }}">Register</a></li>
                             </ul>
-                        </li>
-                    @endauth
+                        @endauth
+                    </li>
                 @endif
             </ul>
         </div>
