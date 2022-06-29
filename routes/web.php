@@ -25,8 +25,8 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-Route::resource('recipe', RecipeController::class, ['except' => ['create', 'edit']]);
-Route::get('home', [RecipeController::class, 'home']);
+Route::resource('recipe', RecipeController::class, ['except' => ['create', 'edit', 'home']]);
+Route::get('home', [RecipeController::class, 'home'])->name('home');
 Route::get('recipe/{id}', [RecipeController::class, 'show']); //recipes can be seen by unauthenticated users
 Route::get('recipecreate', [RecipeController::class, 'create'])->middleware(['auth']);
 Route::post('recipecreate', [RecipeController::class, 'store'])->middleware(['auth']);
