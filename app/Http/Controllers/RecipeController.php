@@ -126,7 +126,8 @@ class RecipeController extends Controller
     //main view of the app
     public function home()
     {
-        $suggestedRecipes = Recipe::orderByDesc('created_at')->orderByDesc('updated_at')->take(10)->get();
+        $suggestedRecipes = Recipe::orderByDesc('created_at')->orderByDesc('updated_at')->take(10)->with('user')->get();
+
         //dd($suggestedRecipes);
         return view('home', ['suggestedRecipes' => $suggestedRecipes]);
     }

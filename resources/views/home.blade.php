@@ -12,7 +12,10 @@
                                 <h5 class="card-title">{{ $recipe->title }}</h5>
                                 <p class="card-text">{{ $recipe->description }}</p>
                                 <p class="card-text">
-                                    <small class="text-muted">Last updated 3 mins ago</small>
+                                    <small class="text-muted">{{ $recipe->user->display_name }}
+                                        /{{ $recipe->user->username }} <br> Last updated:
+                                        {{ $recipe->updated_at }} Created: {{ $recipe->created_at }}
+                                    </small>
                                 </p>
                             </div>
                         </div>
