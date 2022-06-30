@@ -1,35 +1,48 @@
-<x-app-layout>
+@extends('layouts.main')
+@section('pagestyle')
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
+@endsection
 
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('New Recipe') }}
-        </h2>
-    </x-slot>
-    <div class="py-12">
+@section('content')
+    <div class="container">
+        <h1>New Recipe</h1>
         <form method="POST" enctype="multipart/form-data">
 
             @csrf
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" name="title" id="title" class="form-control" />
+            <div class="mb-3">
+                <label class="form-label" for="title">Title</label>
+                <input class="form-control" type="text" name="title" id="title" class="form-control" />
             </div>
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea name="description" id="description" class="form-control"></textarea>
+            <div class="mb-3">
+                <label class="form-label" for="description">Description</label>
+                <textarea class="form-control" name="description" id="description" class="form-control"></textarea>
             </div>
-            <div class="form-group">
-                <label for="thumbnail"></label>
-                <input type="file" name="thumbnail" id="thumbnail" />
+            <div class="mb-3">
+                <label class="form-label" for="thumbnail"></label>
+                <input class="form-control" type="file" name="thumbnail" id="thumbnail" />
             </div>
-            <div class="form-group">
-                <label for="tags">Tags</label>
-                <select name="tags[]" multiple="multiple">
-                    @foreach($tags as $tag)
-                        <option value="{{$tag->id}}">{{$tag->name}}</option>
+            <div class="mb-3">
+                <label class="form-label" for="tags">Tags</label>
+                <select class="form-select" size="3" name="tags[]" multiple="multiple">
+                    @foreach ($tags as $tag)
+                        <option value="{{ $tag->id }}">{{ $tag->name }}</option>
                     @endforeach
                 </select>
             </div>
-            <input type="submit" value="Submit">
+            @if (count($errors) > 0)
+                <div class="form-text">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li class="error">{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <input class="btn btn-light" type="submit" value="Submit">
         </form>
     </div>
-</x-app-layout>
+@endsection

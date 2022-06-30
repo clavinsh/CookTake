@@ -7,6 +7,7 @@ use App\Models\Recipe;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
 
 class RecipeController extends Controller
 {
@@ -38,6 +39,16 @@ class RecipeController extends Controller
      */
     public function store(Request $request)
     {
+
+        $rules = array(
+            'title' => 'required|string|min:3',
+            'description' => 'string',
+            'user_id' => 'exists:users,id',
+            'thumbnail' => 'image|max:5000'
+        );
+
+        $this->validate($request, $rules);
+
         $recipe = new Recipe();
         $recipe->title = $request->title;
         $recipe->description = $request->description;
@@ -49,14 +60,6 @@ class RecipeController extends Controller
             $filePath = Storage::disk('public')->put('images', $imageFile);
             $recipe->image_path = $filePath;
         }
-
-        // foreach ($request->tags as $tag) {
-        //     $recipe->tags()-
-        // }
-
-
-        //dd(asset('storage/' . $filePath));
-
 
         $recipe->save();
         $recipe->tags()->attach($request->tags);
@@ -71,7 +74,8 @@ class RecipeController extends Controller
      */
     public function show($id)
     {
-        $recipe = Recipe::where('id', '=', $id)->first();
+        $recipe = Recipe::where('id', '=', $id)->with('user')->with('tags')->first();
+
         return view('recipe.recipe', ['recipe' => $recipe]);
     }
 
@@ -123,12 +127,77 @@ class RecipeController extends Controller
         //return home view (?)
     }
 
-    //main view of the app
+    //shows top recipies for guests and suggested recipes for users
     public function home()
     {
-        $suggestedRecipes = Recipe::orderByDesc('created_at')->orderByDesc('updated_at')->take(10)->with('user')->get();
+        $suggestedRecipes = '';
+        if (Auth::check()) {
+            //recipes get ranked by how much they correspond with the users followed tags
+            $suggestedRecipes = Recipe::orderByDesc('created_at')->orderByDesc('updated_at')->take(10)->with('user')->with('tags')->get();
+        } else {
+
+            $suggestedRecipes = Recipe::orderByDesc('created_at')->orderByDesc('updated_at')->take(10)->with('user')->with('tags')->get();
+        }
 
         //dd($suggestedRecipes);
-        return view('home', ['suggestedRecipes' => $suggestedRecipes]);
+        return view('home', ['recipes' => $suggestedRecipes]);
+    }
+
+    public function showSearch()
+    {
+        $tags = Tag::all();
+        return view('recipe.search', ['tags' => $tags]);
+    }
+
+    public function search(Request $request)
+    {
+        $rules = '';
+        if ($request->date_from != null) {
+            $date_from = $request->date_from;
+            $rules = array(
+                'name' => 'nullable|string|min:2|max:100|',
+                'date_from' => 'nullable|date',
+                'date_to' => 'nullable|date|after_or_equal:' . $date_from
+            );
+        } else {
+            $rules = array(
+                'name' => 'nullable|string|min:2|max:100|',
+                'date_from' => 'nullable|date',
+                'date_to' => 'nullable|date'
+            );
+        }
+
+        $this->validate($request, $rules);
+
+        $data = Recipe::select('recipes.*');
+
+
+        if ($request->tags != null) {
+            //matches against each tag, returns recipes with all queried tags
+            foreach ($request->tags as $tag) {
+                $data = $data->whereHas('tags', function ($query) use ($tag) {
+                    return $query->where('id', $tag);
+                });
+            }
+            //dd($data->get());
+        }
+
+        if ($request->date_from != null) {
+            $data = $data->where('recipes.created_at', '>=', $request->date_from);
+        }
+
+        if ($request->date_to != null) {
+            $data = $data->where('recipes.created_at', '<=', $request->date_to);
+        }
+
+        if ($request->title != null) {
+            $data = $data->where('recipes.title', 'LIKE', '%' . $request->title . '%');
+        }
+
+        // if ($request->author != null) {
+        //     $data = $data->where('recipes.created_at', '>=', $request->date_to);
+        // }
+        $data = $data->with('tags')->with('user')->get();
+        return view('recipe.results', ['recipes' => $data]);
     }
 }
