@@ -13,6 +13,9 @@
 
 <body>
     @include('components.navbar')
+    <div class="container pt-3">
+        @yield('header')
+    </div>
     <main class="pt-4">
         @yield('content')
     </main>

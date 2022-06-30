@@ -25,19 +25,23 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-Route::resource('recipe', RecipeController::class, ['except' => ['create', 'edit', 'home']]);
+Route::resource('recipe', RecipeController::class, ['except' => ['create', 'edit', 'home', 'showSearch']]);
 Route::get('home', [RecipeController::class, 'home'])->name('home');
-Route::get('recipe/{id}', [RecipeController::class, 'show']); //recipes can be seen by unauthenticated users
-Route::get('recipecreate', [RecipeController::class, 'create'])->middleware(['auth']);
+Route::get('recipe/{id}', [RecipeController::class, 'show'])->name('recipe'); //recipes can be seen by unauthenticated users
+Route::get('recipecreate', [RecipeController::class, 'create'])->middleware(['auth'])->name('recipecreate');
 Route::post('recipecreate', [RecipeController::class, 'store'])->middleware(['auth']);
 Route::get('recipeedit/{id}', [RecipeController::class, 'edit'])->middleware(['auth']);
 Route::put('recipeedit/{id}', [RecipeController::class, 'update'])->middleware(['auth']);
+Route::get('recipesearch', [RecipeController::class, 'showSearch'])->name('recipesearch');
+Route::post('recipesearch', [RecipeController::class, 'search']);
 
-Route::resource('tag', TagController::class, ['except' => ['index', 'tagcreate']]);
+Route::resource('tag', TagController::class, ['except' => ['index', 'tagcreate', 'tagfollow']]);
 Route::get('tags', [TagController::class, 'index']);
 Route::get('tagcreate', [TagController::class, 'create'])->middleware(['auth']);
 Route::post('tagcreate', [TagController::class, 'store'])->middleware(['auth']);
-
+Route::get('tagrecipes/{id}', [TagController::class, 'show'])->name('tagrecipes');
+Route::post('tagfollow/{id}', [TagController::class, 'followTag'])->middleware(['auth'])->name('followTag');
+Route::post('tagunfollow/{id}', [TagController::class, 'unfollowTag'])->middleware(['auth'])->name('unfollowTag');
 
 
 require __DIR__ . '/auth.php';

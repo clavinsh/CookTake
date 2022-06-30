@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Tag;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TagController extends Controller
 {
@@ -48,9 +50,12 @@ class TagController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    //shows all recipes with this tag
     public function show($id)
     {
-        //
+        $tag = Tag::where('id', '=', $id)->with('recipes')->first();
+        $tagrecipes = $tag->recipes()->with('user')->get();
+        return view('tag.recipes', ['recipes' => $tagrecipes, 'tag' => $tag->with('users')->first()]);
     }
 
     /**
@@ -85,5 +90,19 @@ class TagController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function followTag($request)
+    {
+        $tag = Tag::where('id', '=', $request)->first();
+        $tag->users()->attach(Auth::user());
+        return redirect('tagrecipes/' . $request);
+    }
+
+    public function unfollowTag($request)
+    {
+        $tag = Tag::where('id', '=', $request)->first();
+        $tag->users()->detach(Auth::user());
+        return redirect('tagrecipes/' . $request);
     }
 }
