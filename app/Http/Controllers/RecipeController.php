@@ -227,4 +227,12 @@ class RecipeController extends Controller
         $data = $data->with('tags')->with('user')->get();
         return view('recipe.results', ['recipes' => $data]);
     }
+
+    public function adminPage()
+    {
+        $recipes = Recipe::all();
+        $tags = Tag::all();
+
+        return view('admin_dashboard', ['recipes' => $recipes, 'tags' => $tags]);
+    }
 }

@@ -89,7 +89,10 @@ class TagController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $tag = Tag::findOrFail($id);
+        $tag->users()->detach();
+        $tag->recipes()->detach();
+        $tag->delete();
     }
 
     public function followTag($request)

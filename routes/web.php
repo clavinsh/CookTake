@@ -21,11 +21,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', 'home');
 
-Route::get('/admin_dashboard', function () {
-    return view('admin_dashboard');
-})->middleware(['auth', 'admin'])->name('admin_dashboard');
+
 
 Route::resource('recipe', RecipeController::class, ['except' => ['create', 'edit', 'home', 'showSearch']]);
+Route::get('admin_dashboard', [RecipeController::class, 'adminPage'])->middleware(['auth', 'admin'])->name('admin_dashboard');
 Route::get('home', [RecipeController::class, 'home'])->middleware(['user'])->name('home');
 Route::get('recipe/{id}', [RecipeController::class, 'show'])->name('recipe'); //recipes can be seen by unauthenticated users
 Route::get('recipecreate', [RecipeController::class, 'create'])->middleware(['auth'])->name('recipecreate');

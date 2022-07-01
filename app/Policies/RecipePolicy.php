@@ -22,11 +22,11 @@ class RecipePolicy
 
     public function update(User $user, Recipe $recipe)
     {
-        return $user->id === $recipe->user_id;
+        return ($user->id === $recipe->user_id) || ($user->isAdmin());
     }
 
     public function delete(User $user, Recipe $recipe)
     {
-        return $user->id === $recipe->user_id;
+        return ($user->id === $recipe->user_id) || ($user->isAdmin());
     }
 }
