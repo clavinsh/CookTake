@@ -32,8 +32,9 @@
                                     </div>
                                     <p class="card-text allign-bottom" style="position: absolute;bottom:0.5rem;">
                                         <small class="text-muted">{{ $recipe->user->display_name }}
-                                            /{{ $recipe->user->username }} <br> Last updated:
-                                            {{ $recipe->updated_at }} Created: {{ $recipe->created_at }}
+                                            /{{ $recipe->user->username }} <br>{{ __('messages.Last updated:') }}
+                                            {{ $recipe->updated_at }} {{ __('messages.Created:') }}
+                                            {{ $recipe->created_at }}
                                         </small>
                                     </p>
                                 </div>

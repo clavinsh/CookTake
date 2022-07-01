@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\TagController;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,8 +22,6 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::redirect('/', 'home');
-
-
 
 Route::resource('recipe', RecipeController::class, ['except' => ['create', 'edit', 'home', 'showSearch']]);
 Route::get('admin_dashboard', [RecipeController::class, 'adminPage'])->middleware(['auth', 'admin'])->name('admin_dashboard');
@@ -42,5 +42,18 @@ Route::get('tagrecipes/{id}', [TagController::class, 'show'])->name('tagrecipes'
 Route::post('tagfollow/{id}', [TagController::class, 'followTag'])->middleware(['auth'])->name('followTag');
 Route::post('tagunfollow/{id}', [TagController::class, 'unfollowTag'])->middleware(['auth'])->name('unfollowTag');
 
+Route::get('lang/{locale}', LanguageController::class)->name('lang');
+
+// Route::post('setlatvian', function ($request) {
+//     $request->cookie('language');
+//     App::setlocale('lv');
+//     return redirect()->back();
+// })->name('setlatvian');
+
+// Route::post('setenglish', function ($request) {
+//     $request->cookie('language');
+//     App::setlocale('en');
+//     return redirect()->back();
+// });
 
 require __DIR__ . '/auth.php';
