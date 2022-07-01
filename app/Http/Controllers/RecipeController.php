@@ -74,7 +74,8 @@ class RecipeController extends Controller
      */
     public function show($id)
     {
-        $recipe = Recipe::where('id', '=', $id)->with('user')->with('tags')->first();
+
+        $recipe = Recipe::findOrFail($id); //->with('user')->with('tags');
 
         return view('recipe.recipe', ['recipe' => $recipe]);
     }
@@ -87,8 +88,9 @@ class RecipeController extends Controller
      */
     public function edit($id)
     {
-        $recipe = Recipe::find($id);
-        return view('recipe.edit', compact('recipe'));
+        $recipe = Recipe::findOrFail($id);
+        $tags = Tag::all();
+        return view('recipe.edit', ['recipe' => $recipe, 'tags' => $tags]);
     }
 
     /**
@@ -104,12 +106,17 @@ class RecipeController extends Controller
         $recipe->title = $request->title;
         $recipe->description =  $request->description;
         if ($request->hasFile('thumbnail')) {
-            //delete old
-            //dd($request->file('thumbnail'));
-            Storage::disk('public')->delete($recipe->image_path);
+            if ($recipe->image_path != null) {
+                Storage::disk('public')->delete($recipe->image_path);
+            }
             //put new
             $recipe->image_path = Storage::disk('public')->put('images', $request->file('thumbnail'));
         }
+        if ($request->tags != null) {
+            $recipe->tags()->detach($recipe->tags);
+            $recipe->tags()->attach($request->tags);
+        }
+
         $recipe->save();
         return redirect('recipe/' . $id);
     }
@@ -124,7 +131,7 @@ class RecipeController extends Controller
     public function destroy($id)
     {
         Recipe::findOrFail($id)->delete();
-        //return home view (?)
+        return redirect('home');
     }
 
     //shows top recipies for guests and suggested recipes for users

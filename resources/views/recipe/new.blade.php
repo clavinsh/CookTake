@@ -15,11 +15,11 @@
             @csrf
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
-                <input class="form-control" type="text" name="title" id="title" class="form-control" />
+                <input class="form-control" type="text" name="title" id="title" />
             </div>
             <div class="mb-3">
                 <label class="form-label" for="description">Description</label>
-                <textarea class="form-control" name="description" id="description" class="form-control"></textarea>
+                <textarea class="form-control" name="description" id="description"></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="thumbnail"></label>

@@ -53,9 +53,9 @@ class TagController extends Controller
     //shows all recipes with this tag
     public function show($id)
     {
-        $tag = Tag::where('id', '=', $id)->with('recipes')->first();
+        $tag = Tag::findOrFail($id);
         $tagrecipes = $tag->recipes()->with('user')->get();
-        return view('tag.recipes', ['recipes' => $tagrecipes, 'tag' => $tag->with('users')->first()]);
+        return view('tag.recipes', ['recipes' => $tagrecipes, 'tag' => $tag]);
     }
 
     /**

@@ -30,7 +30,7 @@ Route::get('home', [RecipeController::class, 'home'])->name('home');
 Route::get('recipe/{id}', [RecipeController::class, 'show'])->name('recipe'); //recipes can be seen by unauthenticated users
 Route::get('recipecreate', [RecipeController::class, 'create'])->middleware(['auth'])->name('recipecreate');
 Route::post('recipecreate', [RecipeController::class, 'store'])->middleware(['auth']);
-Route::get('recipeedit/{id}', [RecipeController::class, 'edit'])->middleware(['auth']);
+Route::get('recipeedit/{id}', [RecipeController::class, 'edit'])->middleware(['auth'])->name('recipeedit');
 Route::put('recipeedit/{id}', [RecipeController::class, 'update'])->middleware(['auth']);
 Route::get('recipesearch', [RecipeController::class, 'showSearch'])->name('recipesearch');
 Route::post('recipesearch', [RecipeController::class, 'search']);
