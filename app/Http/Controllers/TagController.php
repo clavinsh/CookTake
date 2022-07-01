@@ -94,14 +94,14 @@ class TagController extends Controller
 
     public function followTag($request)
     {
-        $tag = Tag::where('id', '=', $request)->first();
+        $tag = Tag::findOrFail($request);
         $tag->users()->attach(Auth::user());
         return redirect('tagrecipes/' . $request);
     }
 
     public function unfollowTag($request)
     {
-        $tag = Tag::where('id', '=', $request)->first();
+        $tag = Tag::findOrFail($request);
         $tag->users()->detach(Auth::user());
         return redirect('tagrecipes/' . $request);
     }

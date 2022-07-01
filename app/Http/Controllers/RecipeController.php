@@ -74,7 +74,6 @@ class RecipeController extends Controller
      */
     public function show($id)
     {
-
         $recipe = Recipe::findOrFail($id); //->with('user')->with('tags');
 
         return view('recipe.recipe', ['recipe' => $recipe]);
@@ -88,7 +87,12 @@ class RecipeController extends Controller
      */
     public function edit($id)
     {
+
         $recipe = Recipe::findOrFail($id);
+        if (auth()->user()->cannot('update', $recipe)) {
+            abort(403);
+        }
+
         $tags = Tag::all();
         return view('recipe.edit', ['recipe' => $recipe, 'tags' => $tags]);
     }
@@ -102,14 +106,25 @@ class RecipeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $recipe = Recipe::find($id);
+        $recipe = Recipe::findOrFail($id);
+        if (auth()->user()->cannot('update', $recipe)) {
+            abort(403);
+        }
+
+        $rules = array(
+            'title' => 'required|string|min:3',
+            'description' => 'string',
+            'user_id' => 'exists:users,id',
+            'thumbnail' => 'image|max:5000'
+        );
+        $this->validate($request, $rules);
+
         $recipe->title = $request->title;
         $recipe->description =  $request->description;
         if ($request->hasFile('thumbnail')) {
             if ($recipe->image_path != null) {
                 Storage::disk('public')->delete($recipe->image_path);
             }
-            //put new
             $recipe->image_path = Storage::disk('public')->put('images', $request->file('thumbnail'));
         }
         if ($request->tags != null) {
@@ -130,7 +145,12 @@ class RecipeController extends Controller
 
     public function destroy($id)
     {
-        Recipe::findOrFail($id)->delete();
+        $recipe = Recipe::findOrFail($id);
+        if (auth()->user()->cannot('update', $recipe)) {
+            abort(403);
+        }
+        $recipe->tags()->detach();
+        $recipe->delete();
         return redirect('home');
     }
 

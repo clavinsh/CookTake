@@ -33,26 +33,15 @@
 
         <div class="row">
             <div class="col">
-                {{-- @auth
-                    @if (Auth::user()->id === $recipe->user_id)
-                        @if (count($recipe->tags) == 0)
-                            <p>You haven't added any tags to this recipe yet! You can dod that <a href="">here</a>!</p>
-                        @endif
-                        <p><input type="button" value="Edit" onclick="editRecipe({{ $recipe->id }})"></p>
-
-                        <form method="POST"
-                            action="{{ action([App\Http\Controllers\RecipeController::class, 'destroy'], $recipe->id) }}">
-                            @csrf @method('DELETE')<input type="submit" value="Delete">
-                        </form>
-                    @endif
-                @endauth --}}
                 @can('update', $recipe)
-                    <a class="btn btn-light" href="{{ route('recipeedit', $recipe->id) }}">Edit</a>
+                    <div class="pb-3">
+                        <a class="btn btn-warning" href="{{ route('recipeedit', $recipe->id) }}">Edit</a>
+                    </div>
                 @endcan
                 @can('delete', $recipe)
                     <form method="POST"
                         action="{{ action([App\Http\Controllers\RecipeController::class, 'destroy'], $recipe->id) }}">
-                        @csrf @method('DELETE')<input type="submit" value="Delete">
+                        @csrf @method('DELETE')<input class="btn btn-danger" type="submit" value="Delete">
                     </form>
                 @endcan
 
