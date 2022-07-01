@@ -54,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Tag::class, 'followed_tags');
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->getAttribute('isAdmin') === 1;
+    }
 }
